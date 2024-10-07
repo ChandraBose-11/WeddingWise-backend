@@ -35,7 +35,7 @@ app.use((err, req, res, next) => {
 connectDB();
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Api");
+  res.send("Welcome to Weddingwise App");
 });
 
 //Api routes
