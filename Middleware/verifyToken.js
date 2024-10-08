@@ -3,7 +3,7 @@ import { errorHandler } from "../Utils/Error.js";
 
 
 export const verifyToken = ( req,res, next) => {
-  const token = req.headers.token;
+  const token = req.headers.token||req.headers.authorization.split(" ")[1];
   //console.log(token);
   if (!token) {
     return next(errorHandler(401, 'Unauthorized Access'));
