@@ -59,19 +59,22 @@ export const loginUser = async (req, res, next) => {
 
 // Google firebase
 
-export const google = async (req, res, next) => {
+export const google = async (req, res) => {
   const { email, name, profilePic } = req.body;
   try {
     const user = await User.findOne({ email });
     if (user) {
-      const token = jwt.sign(
-        { id: user._id, isAdmin: user.isAdmin },
-        process.env.JWT_SECRET_KEY
-      );
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY);
+
       const { password: passkey, ...rest } = user._doc;
+
       res
         .status(200)
-        .json({ message: "User LoggedIn Successfully", rest, token });
+        .json({
+          message: "User LoggedIn Successfully using Google",
+          rest,
+          token,
+        });
     } else {
       const generatePassword =
         Math.random().toString(36).slice(-8) +
@@ -86,16 +89,19 @@ export const google = async (req, res, next) => {
         profilePicture: profilePic,
       });
       await newUser.save();
-      const token = jwt.sign(
-        { id: newUser._id, isAdmin: newUser.isAdmin },
-        process.env.JWT_SECRET_KEY
-      );
+      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY);
+
       const { password: passkey, ...rest } = newUser._doc;
+
       res
         .status(200)
-        .json({ message: "User LoggedIn Successfully", rest, token });
+        .json({
+          message: "User LoggedIn Successfully using Google",
+          rest,
+          token,
+        });
     }
   } catch (error) {
-    next(error);
+    res.status(500).json({ message: "Internal server error in Login User" });
   }
 };
