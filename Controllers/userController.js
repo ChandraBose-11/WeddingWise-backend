@@ -1,8 +1,8 @@
-import bcryptjs from "bcryptjs";
-import { errorHandler } from "../Utils/Error.js";
-import User from "../Models/userModel.js";
+const bcryptjs =require ("bcryptjs");
+const errorHandler  =require ("../Utils/Error.js");
+const User =require ("../Models/userModel.js");
 
-export const updateUser = async (req, res, next) => {
+ const updateUser = async (req, res, next) => {
   if (req.user.id !== req.params.id) {
     return next(errorHandler(403, 'You are not allowed to update this user'));
   }
@@ -50,8 +50,11 @@ export const updateUser = async (req, res, next) => {
   }
 };
 
-export const deleteUser = async(req,res,next)=>{
-  if(req.user.id !== req.params.id){
+ const deleteUser = async(req,res,next)=>{
+  console.log(req.params.id);
+  
+  if(req.user.id !== req.params.id)
+    {
     return next(errorHandler(403,'You are not allowed to delete this user'));
   }
   try {
@@ -61,3 +64,5 @@ export const deleteUser = async(req,res,next)=>{
     next(error);
   }
 };
+const Users={updateUser:updateUser,deleteUser:deleteUser}
+module.exports=Users

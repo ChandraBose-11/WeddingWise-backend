@@ -1,5 +1,5 @@
-import express from 'express';
-import { google, loginUser, registerUser } from '../Controllers/authController.js';
+const express =require('express');
+const Auths =require('../Controllers/authController');
 
 
 
@@ -9,11 +9,11 @@ import { google, loginUser, registerUser } from '../Controllers/authController.j
 const router = express.Router();
 
 
-router.post('/register-user',registerUser)
-router.post('/login-user',loginUser)
+router.post('/register-user',Auths.registerUser)
+router.post('/login-user',Auths.loginUser)
 router.post('/google',google)
 
 
 
 
-export default router;
+module.exports= router;

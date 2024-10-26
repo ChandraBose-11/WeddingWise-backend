@@ -1,47 +1,45 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import connectDB from "./Database/Config.js";
-import authRoute from './Routes/authRouter.js'
-import userRoute from './Routes/userRouter.js'
-import cookieParser from "cookie-parser";
-
-dotenv.config();
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config()
+const authRoute = require("./Routes/authRouter.js");
+const userRoute = require("./Routes/userRouter.js");
+const cookieParser = require("cookie-parser");
+const mallsRouter = require("./Routes/malls.js");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
 const app = express();
 
 app.use(
-  cors({
-    origin: "*",
-    credentials: "true",
-  })
+  cors()
 );
 
-app.use(express.json());
+// app.use(express.json());
 app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+// Error handler
+// app.use((err, req, res, next) => {
+//   const statusCode = err.statusCode || 500;
+//   const message = err.message || "Internal Server Error ";
+//   res.status(statusCode).json({
+//     success: false,
+//     statusCode,
+//     message,
+//   });
+// });
 
-//Error handler
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || "Internal Server Error ";
-  res.status(statusCode).json({
-    success: false,
-    statusCode,
-    message,
-  });
-});
 
-connectDB();
-
-app.get("/", (req, res) => {
-  res.send("Welcome to Weddingwise App");
-});
 
 //Api routes
- app.use('/api/auth',authRoute);
- app.use('/api/user',userRoute);
+app.use("/api/auth", authRoute);
+app.use("/api/user", userRoute);
+app.use("/api/malls", mallsRouter);
+//routes
 
-
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port `);
+mongoose.connect(process.env.MONGODB_URL).then(() => {
+  console.log("Database Connected");
+app.listen("5000", () => {
+   console.log("Server is running on port 3000");
+  });
 });

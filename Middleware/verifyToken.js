@@ -1,17 +1,21 @@
-import jwt from "jsonwebtoken";
-import { errorHandler } from "../Utils/Error.js";
 
-export const verifyToken = (req, res, next) => {
-  const token = req.headers.token || req.headers.authorization.split(" ")[1];
-  //console.log(token);
-  if (!token) {
-    return next(errorHandler(401, "Unauthorized Access"));
-  }
-  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
-    if (err) {
-      return next(errorHandler(401, "Unauthorized access"));
+const jwt = require("jsonwebtoken");
+
+const loginAuth = (req, res, next) => {
+  const token = req.header("Authorization");
+
+  try {
+    if (!token) {
+      return res.status(403).send({ message: "Token doen't exist" });
     }
-    req.user = user;
+    const verified = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    req.user = verified;
     next();
-  });
+  } catch (err) {
+    res
+      .status(500)
+      .send({ message: "Invalid token", err: err.message, path: "/" });
+  }
 };
+
+module.exports = loginAuth;

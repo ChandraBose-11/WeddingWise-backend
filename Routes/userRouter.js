@@ -1,13 +1,14 @@
-import express from 'express'
-import { deleteUser, updateUser } from '../Controllers/userController.js';
-import { verifyToken } from '../Middleware/verifyToken.js';
+const express =require ('express')
+const Users =require ('../Controllers/userController.js');
+const  loginAuth  =require ('../Middleware/verifyToken.js');
 
+const {updateUser,deleteUser}=Users
 
 
 const router = express.Router();
 
-router.put('/update/:id',verifyToken,updateUser)
-router.delete('/delete/:id',verifyToken,deleteUser)
+router.put('/update/:id',loginAuth,updateUser)
+router.delete('/delete/:id',loginAuth,deleteUser)
 
 
-export default router;
+module.exports=router;

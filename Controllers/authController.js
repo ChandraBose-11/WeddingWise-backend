@@ -1,13 +1,15 @@
-import User from "../Models/userModel.js";
-import { errorHandler } from "../Utils/Error.js";
-import bcryptjs from "bcryptjs";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
+const User =require ("../Models/userModel.js");
+const  errorHandler  =require ("../Utils/Error.js");
+const bcryptjs =require ("bcryptjs");
+const jwt =require ("jsonwebtoken");
+require("dotenv").config()
 
-dotenv.config();
 
-export const registerUser = async (req, res, next) => {
+
+ const registerUser = async (req, res, next) => {
   const { username, email, password } = req.body;
+  console.log(req.body);
+  
   if (
     !username ||
     !email ||
@@ -31,10 +33,12 @@ export const registerUser = async (req, res, next) => {
   }
 };
 
-export const loginUser = async (req, res, next) => {
+ const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
+  console.log(req.body);
+  
   if (!email || !password || email === "" || password === "") {
-    return next(errorHandler(400, "All The Fields Are Required"));
+    return next(errorHandler(400, "All the Fields Are Required"));
   }
   try {
     const userDetail = await User.findOne({ email });
@@ -43,9 +47,16 @@ export const loginUser = async (req, res, next) => {
       return next(errorHandler(400, "Invalid Credentials"));
     }
     const token = jwt.sign(
-      { id: userDetail._id, isAdmin: userDetail.isAdmin },
-      process.env.JWT_SECRET_KEY
-    );
+      {
+        username: userDetail.username,
+        id: userDetail._id,
+        role: userDetail.role,
+      },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "1h",
+      }
+    )
 
     const { password: passkey, ...rest } = userDetail._doc;
 
@@ -59,7 +70,7 @@ export const loginUser = async (req, res, next) => {
 
 // Google firebase
 
-export const google = async (req, res) => {
+ const google = async (req, res) => {
   const { email, name, profilePic } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -105,3 +116,5 @@ export const google = async (req, res) => {
     res.status(500).json({ message: "Internal server error in Login User" });
   }
 };
+const Auths={registerUser:registerUser,loginUser:loginUser,google:google}
+module.exports=Auths

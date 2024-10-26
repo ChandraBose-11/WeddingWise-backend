@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose =require ("mongoose");
 const userSchema = new mongoose.Schema(
   {
     username: {
@@ -20,13 +20,39 @@ const userSchema = new mongoose.Schema(
       default:
         "https://static.vecteezy.com/system/resources/thumbnails/005/544/718/small_2x/profile-icon-design-free-vector.jpg",
     },
-    isAdmin:{
-      type:Boolean,
-      default:false,
-    }
+    role: {
+      type: String,
+      enum: ["Admin", "User"],
+      default: "User",
+    },
+    budget: {
+      type: Number,
+      default: 0,
+    },
+    budgetLeft: {
+      type: Number,
+      default: 0,
+    },
+    budgetSpent: {
+      type: Number,
+      default: 0,
+    },
+    resetCode: {
+      type: String,
+      default: null,
+    },
+  
+    created_at: {
+      type: Date,
+      default: Date.now,
+    },
+    updated_at: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  { timestamps: true }
+ 
 );
 
 const User = mongoose.model("User", userSchema);
-export default User;
+module.exports=User
