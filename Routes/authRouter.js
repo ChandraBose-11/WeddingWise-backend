@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post('/register-user',Auths.registerUser)
 router.post('/login-user',Auths.loginUser)
-router.post('/google',google)
+router.post('/google',Auths.google)
 
 
 
