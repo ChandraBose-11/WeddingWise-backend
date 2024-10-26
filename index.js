@@ -7,7 +7,7 @@ const cookieParser = require("cookie-parser");
 const mallsRouter = require("./Routes/malls.js");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-
+const cateringRouter = require("./Routes/catering.js")
 const app = express();
 
 app.use(
@@ -35,11 +35,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/malls", mallsRouter);
+app.use("/api/catering",cateringRouter)
 //routes
 
 mongoose.connect(process.env.MONGODB_URL).then(() => {
   console.log("Database Connected");
 app.listen("5000", () => {
-   console.log("Server is running on port 3000");
+   console.log("Server is running on port 5000");
   });
 });
