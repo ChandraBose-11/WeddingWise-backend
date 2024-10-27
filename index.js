@@ -8,6 +8,7 @@ const mallsRouter = require("./Routes/malls.js");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cateringRouter = require("./Routes/catering.js")
+const djRouter=require("./Routes/dj.js")
 const app = express();
 
 app.use(
@@ -35,7 +36,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/malls", mallsRouter);
-app.use("/api/catering",cateringRouter)
+app.use("/api/catering",cateringRouter);
+app.use("/api/dj",djRouter)
 //routes
 
 mongoose.connect(process.env.MONGODB_URL).then(() => {
