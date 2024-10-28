@@ -1,15 +1,13 @@
-const User =require ("../Models/userModel.js");
-const  errorHandler  =require ("../Utils/Error.js");
-const bcryptjs =require ("bcryptjs");
-const jwt =require ("jsonwebtoken");
-require("dotenv").config()
+const User = require("../Models/userModel.js");
+const errorHandler = require("../Utils/Error.js");
+const bcryptjs = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
-
-
- const registerUser = async (req, res, next) => {
+const registerUser = async (req, res, next) => {
   const { username, email, password } = req.body;
   console.log(req.body);
-  
+
   if (
     !username ||
     !email ||
@@ -33,10 +31,10 @@ require("dotenv").config()
   }
 };
 
- const loginUser = async (req, res, next) => {
+const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
   console.log(req.body);
-  
+
   if (!email || !password || email === "" || password === "") {
     return next(errorHandler(400, "All the Fields Are Required"));
   }
@@ -56,7 +54,7 @@ require("dotenv").config()
       {
         expiresIn: "1h",
       }
-    )
+    );
 
     const { password: passkey, ...rest } = userDetail._doc;
 
@@ -70,7 +68,7 @@ require("dotenv").config()
 
 // Google firebase
 
- const google = async (req, res) => {
+const google = async (req, res) => {
   const { email, name, profilePic } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -79,13 +77,11 @@ require("dotenv").config()
 
       const { password: passkey, ...rest } = user._doc;
 
-      res
-        .status(200)
-        .json({
-          message: "User LoggedIn Successfully using Google",
-          rest,
-          token,
-        });
+      res.status(200).json({
+        message: "User LoggedIn Successfully using Google",
+        rest,
+        token,
+      });
     } else {
       const generatePassword =
         Math.random().toString(36).slice(-8) +
@@ -100,21 +96,26 @@ require("dotenv").config()
         profilePicture: profilePic,
       });
       await newUser.save();
-      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY);
+      const token = jwt.sign(
+        { id: newUser._id, isAdmin: newUser.isAdmin },
+        process.env.JWT_SECRET_KEY
+      );
 
       const { password: passkey, ...rest } = newUser._doc;
 
-      res
-        .status(200)
-        .json({
-          message: "User LoggedIn Successfully using Google",
-          rest,
-          token,
-        });
+      res.status(200).json({
+        message: "User LoggedIn Successfully using Google",
+        rest,
+        token,
+      });
     }
   } catch (error) {
     res.status(500).json({ message: "Internal server error in Login User" });
   }
 };
-const Auths={registerUser:registerUser,loginUser:loginUser,google:google}
-module.exports=Auths
+const Auths = {
+  registerUser: registerUser,
+  loginUser: loginUser,
+  google: google,
+};
+module.exports = Auths;

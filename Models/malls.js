@@ -8,6 +8,10 @@ const mallsSchema = new mongoose.Schema({
   mallImages: {
     type: [String],
   },
+  mallDescription: {
+    type: String,
+    required: true,
+  },
   mallAddress: {
     type: String,
     required: true,

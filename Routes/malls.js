@@ -21,6 +21,7 @@ mallsRouter.post(
         mallName,
         mallAddress,
         mallCity,
+        mallDescription,
         mallContact,
         spacing,
         amenities,
@@ -56,6 +57,7 @@ mallsRouter.post(
           mallName,
           mallAddress,
           mallCity,
+          mallDescription,
           mallImages: mediaUrls.filter(
             (url) => url.endsWith(".jpg") || url.endsWith(".png")
           ),
