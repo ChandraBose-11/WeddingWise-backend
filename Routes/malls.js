@@ -14,8 +14,8 @@ const upload = multer({ storage: memory });
 
 mallsRouter.post(
     "/add",
-    // loginAuth,
-    // roleAuth("Admin"),
+    loginAuth,
+    roleAuth("Admin"),
     upload.array("media"),
     async (req, res) => {
       const {
@@ -183,8 +183,8 @@ mallsRouter.get("/get/:id", async (req, res) => {
 
 mallsRouter.put(
   "/edit/:id",
-  // loginAuth,
-  // roleAuth("Admin"),
+  loginAuth,
+  roleAuth("Admin"),
   upload.array("media"),
   async (req, res) => {
     const { id } = req.params;
