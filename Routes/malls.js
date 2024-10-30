@@ -4,6 +4,7 @@ const Users = require("../Models/userModel.js");
 const loginAuth = require('../Middleware/verifyToken.js')
 const multer = require("multer");
 const cloudinary=require("../cloudinary.js")
+const roleAuth = require("../Middleware/roleAuth.js")
 
 const mallsRouter = express.Router();
 
@@ -180,5 +181,101 @@ mallsRouter.get("/get/:id", async (req, res) => {
   }
 });
 
+mallsRouter.put(
+  "/edit/:id",
+  // loginAuth,
+  // roleAuth("Admin"),
+  upload.array("media"),
+  async (req, res) => {
+    const { id } = req.params;
+    const {
+      mallName,
+      mallAddress,
+      mallCity,
+      mallDescription,
+      mallContact,
+      spacing,
+      amenities,
+      Price,
+    } = req.body;
+
+    try {
+      //Upload image to cloudinary
+      const mediaUrls = await Promise.all(
+        req.files.map(async (file) => {
+          return new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              {
+                resource_type: "auto",
+                upload_preset: "Unsigned",
+              },
+              (error, result) => {
+                if (error) return reject(error);
+                resolve(result.secure_url);
+              }
+            );
+            uploadStream.end(file.buffer);
+          });
+        })
+      );
+
+      const verify = await malls.findOne({
+        mallContact: mallContact,
+      });
+      console.log(verify._id.toString());
+      console.log(id);
+      if (verify) {
+        if (verify._id.toString() !== id) {
+          return res
+            .status(400)
+            .send({ message: "contact already used in some vendors" });
+        }
+      }
+      const updatedMall = await malls.findByIdAndUpdate(
+        id,
+        {
+          mallName,
+          mallAddress,
+          mallCity,
+          mallContact,
+          mallDescription,
+          spacing,
+          amenities: amenities.split(","),
+          mallImages: mediaUrls.filter(
+            (url) => url.endsWith(".jpg") || url.endsWith(".png")
+          ),
+          Price,
+        },
+        { new: true, runValidators: true }
+      );
+
+      return res
+        .status(200)
+        .send({ message: "update successfully", data: updatedMall });
+    } catch (e) {
+      return res
+        .status(400)
+        .send({ message: "Update failed", data: e.message });
+    }
+  }
+);
+mallsRouter.delete(
+  "/delete/:id",
+  loginAuth,
+  roleAuth("Admin"),
+  async (req, res) => {
+    const { id } = req.params;
+    try {
+      const mall = await malls.findByIdAndDelete(id);
+      console.log(mall);
+      if (!mall) return res.status(404).send({ message: "Mall not found" });
+      res.status(200).send({ message: "Mall deleted successfully" });
+    } catch (e) {
+      return res
+        .status(500)
+        .send({ message: "Delete failed", data: e.message });
+    }
+  }
+);
 
   module.exports = mallsRouter;
